@@ -7,6 +7,12 @@ app_description = "Tianjy Feature"
 app_email = "Tianjy"
 app_license = "MIT"
 
+doc_events = {
+    "File": {
+        "on_update": "tianjy_feature.feature.doctype.file.make_thumbnail",
+    },
+}
+
 # Includes in <head>
 # ------------------
 
