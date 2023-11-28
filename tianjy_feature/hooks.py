@@ -7,6 +7,14 @@ app_description = "Tianjy Feature"
 app_email = "Tianjy"
 app_license = "MIT"
 
+# include js, css files in header of desk.html
+# app_include_css = "/assets/tianjy_feature/css/tianjy_feature.css"
+app_include_js = "tianjy_feature.bundle.js"
+
+# Document Events
+# ---------------
+# Hook on document methods and events
+
 doc_events = {
     "File": {
         "on_update": "tianjy_feature.feature.doctype.file.make_thumbnail",
@@ -16,9 +24,6 @@ doc_events = {
 # Includes in <head>
 # ------------------
 
-# include js, css files in header of desk.html
-# app_include_css = "/assets/tianjy_feature/css/tianjy_feature.css"
-# app_include_js = "/assets/tianjy_feature/js/tianjy_feature.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/tianjy_feature/css/tianjy_feature.css"
@@ -118,18 +123,6 @@ doc_events = {
 
 # override_doctype_class = {
 #	"ToDo": "custom_app.overrides.CustomToDo"
-# }
-
-# Document Events
-# ---------------
-# Hook on document methods and events
-
-# doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
 # }
 
 # Scheduled Tasks
