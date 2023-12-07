@@ -1,6 +1,6 @@
 
 
-const linkFieldType = ['Link', 'Guigu Tree'];
+const linkFieldType = ['Link', 'Guigu Tree', 'Tianjy Related Link'];
 /**
  * @typedef {object} IdentColumn
  * @property {number} column
@@ -31,7 +31,7 @@ function showIdentColumnDialog(doctype, preview_data, cb) {
 			label: __('Fields to be converted'),
 			options: frappe.meta
 				.get_docfields(doctype)
-				.filter(df => linkFieldType.includes(df.fieldtype) && df.options === doctype)
+				.filter(df => linkFieldType.includes(df.fieldtype) && df.options?.split('\n')[0] === doctype)
 				.map(df => {
 					const label = __(df.label);
 					const value = df.fieldname;

@@ -5,6 +5,11 @@ import frappe
 from frappe import _
 from frappe.utils import cstr, update_progress_bar
 
+link_field_types = ['Link', 'Guigu Tree', 'Tianjy Related Link']
+def get_doctype_by_options(options):
+	if not options or not isinstance(options,str): return ''
+	return options.split('\n')[0]
+
 
 from frappe.core.doctype.data_import.importer import (
 	Importer, Row, Column, INSERT, create_import_log, get_select_options
@@ -81,9 +86,8 @@ def import_data(self):
 				doctype = self.doctype
 				identTransformationFields = [f.fieldname for f in frappe.get_meta(doctype).get('fields', {
 					'fieldname': ('in', identTransformation['fields']),
-					'fieldtype': ('in', ['Link','Guigu Tree']),
-					'options': doctype
-				})]
+					'fieldtype': ('in', link_field_types),
+				}) if get_doctype_by_options(f.options) == doctype]
 
 		ident_map = {}
 		if identTransformationFields and import_log:
@@ -232,10 +236,13 @@ def import_data(self):
 		return import_log
 
 def link_exists(self, value, df):
-		key = df.options + "::" + cstr(value)
+		# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		dt = get_doctype_by_options(df.options)
+		key = dt + "::" + cstr(value)
+		# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		if Row.link_values_exist_map.get(key) is None:
 			# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-			Row.link_values_exist_map[key] = df.options == self.doctype or frappe.db.exists(df.options, value)
+			Row.link_values_exist_map[key] = dt == self.doctype or frappe.db.exists(dt, value)
 			# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 		return Row.link_values_exist_map.get(key)
 
@@ -253,11 +260,12 @@ def validate_values(self):
 			# find all values that dont exist
 			values = list({cstr(v) for v in self.column_values if v})
 			# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-			if self.df.options == self.doctype: return
-			# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+			dt = get_doctype_by_options(self.df.options)
+			if dt == self.doctype: return
 			exists = [
-				cstr(d.name) for d in frappe.get_all(self.df.options, filters={"name": ("in", values)})
+				cstr(d.name) for d in frappe.get_all(dt, filters={"name": ("in", values)})
 			]
+			# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 			not_exists = list(set(values) - set(exists))
 			if not_exists:
 				missing_values = ", ".join(not_exists)
@@ -265,7 +273,9 @@ def validate_values(self):
 				self.warnings.append(
 					{
 						"col": self.column_number,
-						"message": message.format(self.df.options, missing_values),
+						# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+						"message": message.format(dt, missing_values),
+						# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 						"type": "warning",
 					}
 				)
