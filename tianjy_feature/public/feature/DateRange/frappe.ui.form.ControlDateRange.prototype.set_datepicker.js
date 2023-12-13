@@ -142,7 +142,7 @@ function getScrollParent(element){
 		scrollValue.indexOf(overFlowYValue)!==-1){
 		return parent;
 	}
-	return getScrollParent(element);
+	return getScrollParent(parent);
 }
 // @ts-ignore
 const {prototype} = frappe.ui.form.ControlDateRange;
