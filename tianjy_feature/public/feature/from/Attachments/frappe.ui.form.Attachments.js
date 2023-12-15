@@ -113,7 +113,7 @@ prototype.add_attachment = function add_attachment(attachment) {
 					if (/^[ \s]*$/.test(replaced)) {
 						return;
 					}
-					const res = await frappe.call<{message:boolean}>({
+					const res = await frappe.call({
 						method: 'tianjy_feature.feature.doctype.file.rename',
 						args: { name, filename: replaced + ext },
 						freeze: true,
