@@ -236,15 +236,9 @@ def import_data(self):
 		return import_log
 
 def link_exists(self, value, df):
-		# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		dt = get_doctype_by_options(df.options)
-		key = dt + "::" + cstr(value)
-		# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		if Row.link_values_exist_map.get(key) is None:
-			# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-			Row.link_values_exist_map[key] = dt == self.doctype or frappe.db.exists(dt, value)
-			# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		return Row.link_values_exist_map.get(key)
+		if dt == self.doctype: return True
+		return bool(frappe.db.exists(dt, value, cache=True))
 
 def validate_values(self):
 		if not self.df:

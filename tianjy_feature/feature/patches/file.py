@@ -32,8 +32,7 @@ def write_file(self):
     with open(file_path, "wb+") as f:
         f.write(self._content)
         os.fsync(f.fileno())
-
-    frappe.local.rollback_observers.append(self)
+    frappe.db.after_rollback.add(self.on_rollback)
 
     return file_path
 
