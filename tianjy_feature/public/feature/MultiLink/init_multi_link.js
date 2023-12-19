@@ -76,7 +76,7 @@ frappe.ui.form.ControlMultiLink = class ControlMultiLink extends frappe.ui.form.
 					no_spinner: true,
 					args,
 					callback(r) {
-						r.results = me.merge_duplicates(r.results);
+						r.results = me.merge_duplicates(r.results || r.message);
 
 						if (!me.df.only_select) {
 							if (frappe.model.can_create(doctype)) {
