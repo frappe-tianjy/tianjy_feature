@@ -3,3 +3,4 @@
  */
 import './frappe.ui.form.ControlLink.prototype.new_doc.js';
 import './frappe.ui.form.update_calling_link.js';
+frappe.provide('frappe.tianjy');
