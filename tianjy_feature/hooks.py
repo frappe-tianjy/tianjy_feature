@@ -7,6 +7,10 @@ app_description = "Tianjy Feature"
 app_email = "Tianjy"
 app_license = "MIT"
 
+extend_bootinfo=[
+	"tianjy_feature.sessions.extend_bootinfo"
+]
+
 # include js, css files in header of desk.html
 # app_include_css = "/assets/tianjy_feature/css/tianjy_feature.css"
 app_include_js = "tianjy_feature.bundle.js"
