@@ -23,26 +23,22 @@ const imageExt = new Set([
 
 // 文档附件的的显示处理
 const { prototype } = frappe.ui.form.Attachments;
-prototype.refresh = function refresh() {
+
+prototype.render_attachments = function render_attachments(attachments) {
 	let me = this;
+	let attachments_to_render = attachments;
 
-	if (this.frm.doc.__islocal) {
-		this.parent.toggle(false);
-		return;
+	let is_slicable = attachments.length > this.attachments_page_length;
+	if (!this.show_all_attachments && is_slicable) {
+		// render last n attachments as they are at the top
+		let start = attachments.length - this.attachments_page_length;
+		attachments_to_render = attachments.slice(start, attachments.length);
 	}
-	this.parent.toggle(true);
-	this.parent.find('.attachment-row').remove();
 
-	let max_reached = this.max_reached();
-	const hasCreatePermission = frappe.perm.has_perm(this.frm.doctype, 0, 'create');
-	const hasWritePermission = frappe.perm.has_perm(this.frm.doctype, 0, 'write');
-	this.add_attachment_wrapper.toggle(!max_reached&&hasCreatePermission&&hasWritePermission);
-
-	// add attachment objects
-	let attachments = this.get_attachments();
-	if (attachments.length) {
+	if (attachments_to_render.length) {
 		let exists = {};
-		let unique_attachments = attachments.filter(attachment => {
+		let unique_attachments = attachments_to_render.filter(attachment => {
+			// 是否存在的判断逻辑改为基于文件路径
 			const file_name = attachment.file_url || attachment.file_name;
 			return Object.prototype.hasOwnProperty.call(exists, file_name)
 				? false
@@ -51,8 +47,13 @@ prototype.refresh = function refresh() {
 		for (const attachment of unique_attachments) {
 			me.add_attachment(attachment);
 		}
-	} else {
+	}
+
+	if (!attachments.length) {
+		// If no attachments in totality
 		this.attachments_label.removeClass('has-attachments');
+		// hide explore icon button
+		this.parent.find('.explore-btn').toggle(false);
 	}
 };
 
@@ -69,14 +70,16 @@ prototype.add_attachment = function add_attachment(attachment) {
 	const ext = arr[arr.length - 1].toLowerCase();
 
 	let file_label = `
-		<a href="${file_url}" target="_blank" ${!imageExt.has(ext) && `download="${file_name}"`} title="${file_name}" class="ellipsis" style="max-width: calc(100% - 43px);">
+		<a href="${file_url}" target="_blank" ${!imageExt.has(ext) && `download="${file_name}"`} title="${frappe.utils.escape_html(file_name)}"
+			class="ellipsis" style="max-width: calc(100% - 43px);"
+		>
 			<span>${file_name}</span>
 		</a>`;
 
 	let remove_action = null;
 	let rename_action = null;
-	const hasDeletePermission = frappe.perm.has_perm(this.frm.doctype, 0, 'delete');
-	const hasWritePermission = frappe.perm.has_perm(this.frm.doctype, 0, 'write');
+	const hasDeletePermission = frappe.model.can_delete(this.frm.doctype, this.frm.name);
+	const hasWritePermission = frappe.model.can_write(this.frm.doctype, this.frm.name);
 	if (hasDeletePermission&&hasWritePermission) {
 		remove_action = function (target_id) {
 			frappe.confirm(__('Are you sure you want to delete the attachment?'), function () {
@@ -134,12 +137,12 @@ prototype.add_attachment = function add_attachment(attachment) {
 		saveAs(file_url, file_name);
 	};
 	const icon = `<a href="/app/file/${fileid}">
-			${frappe.utils.icon(attachment.is_private ? 'lock' : 'unlock', 'sm ml-0')}
+			${frappe.utils.icon(attachment.is_private ? 'es-line-lock' : 'es-line-unlock', 'sm ml-0')}
 		</a>`;
 
 	$(`<li class="attachment-row">`)
 		.append(frappe.get_data_pill(file_label, fileid, remove_action, icon, rename_action, download_action))
-		.insertAfter(this.attachments_label.addClass('has-attachments'));
+		.insertAfter(this.add_attachment_wrapper);
 };
 // 删除成功添加提示
 prototype.remove_attachment = function (fileid, callback) {
