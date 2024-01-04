@@ -16,3 +16,4 @@ import './MultiSelect/frappe.ui.form.ControlMultiSelect_for_show_label.js';
 
 
 import './doctype/file.js';
+import './datetime/comment_when.js';
