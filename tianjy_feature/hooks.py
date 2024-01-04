@@ -10,7 +10,9 @@ app_license = "MIT"
 extend_bootinfo=[
 	"tianjy_feature.sessions.extend_bootinfo"
 ]
-
+app_include_css = [
+    "patch_comment.bundle.css",
+]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/tianjy_feature/css/tianjy_feature.css"
 app_include_js = "tianjy_feature.bundle.js"

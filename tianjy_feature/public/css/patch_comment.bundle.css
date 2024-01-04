@@ -1,0 +1,16 @@
+.comment-box .add-attachment-btn {
+	padding: 0 !important;
+	display: inline-block;
+	margin-left: 48px;
+}
+
+.comment-box .attachment-container {
+	margin-top: var(--margin-md);
+}
+
+.comment-box .form-attachments {
+	margin-left: 48px;
+	max-width: var(--timeline-content-max-width);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md);
+}
